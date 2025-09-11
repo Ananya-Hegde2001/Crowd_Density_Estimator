@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Upload - Crowd Density Monitor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-color: #111827;
+            --light-color: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; color: var(--gray-900); line-height: 1.6; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    /* Shared navbar styles to match monitoring.html */
+    .navbar { background: white; padding: 1rem 0; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 1000; }
+    .nav-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; }
+    .logo { font-size: 1.5rem; font-weight: bold; color: #667eea; }
+    .user-info { display: flex; align-items: center; gap: 1rem; }
+    .user-welcome { color: #333; font-weight: 500; }
+    .navbar .btn { padding: 0.5rem 1.5rem; border: none; border-radius: 25px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s; }
+    .navbar .btn-outline { border: 2px solid #667eea; color: #667eea; background: transparent; }
+    .navbar .btn-outline:hover { background: #667eea; color: white; transform: translateY(-2px); }
+        .container { max-width: 1280px; margin: 0 auto; padding: 2rem; }
+        .page-header { text-align: center; margin-bottom: 3rem; color: white; }
+        .page-header h1 { font-size: 3rem; font-weight: 700; margin-bottom: 1rem; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .page-header p { font-size: 1.25rem; opacity: 0.9; font-weight: 400; }
+        .upload-section { background: white; border-radius: var(--radius-xl); padding: 2.5rem; margin-bottom: 2rem; box-shadow: var(--shadow-xl); border: 1px solid rgba(255, 255, 255, 0.2); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .upload-section:hover { transform: translateY(-2px); box-shadow: 0 25px 35px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        .upload-section h3 { font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .upload-area { border: 2px dashed var(--gray-300); border-radius: var(--radius-lg); padding: 3rem 2rem; text-align: center; background: var(--gray-50); margin-bottom: 1.5rem; transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden; }
+        .upload-area::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.05), transparent); transition: left 0.5s ease; }
+        .upload-area:hover::before { left: 100%; }
+        .upload-area:hover { background: rgba(59, 130, 246, 0.02); border-color: var(--primary-color); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .upload-area.dragover { background: rgba(59, 130, 246, 0.05); border-color: var(--primary-color); transform: scale(1.02); }
+        .upload-icon { font-size: 4rem; color: var(--primary-color); margin-bottom: 1rem; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        .upload-text { font-size: 1.25rem; color: var(--gray-700); margin-bottom: 0.5rem; font-weight: 500; }
+        .upload-subtext { color: var(--gray-500); font-size: 0.875rem; margin-bottom: 0.25rem; }
+        #videoFile { display: none; }
+        .btn { padding: 0.75rem 2rem; border: none; border-radius: var(--radius-lg); cursor: pointer; font-size: 1rem; font-weight: 600; font-family: inherit; transition: all 0.2s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; margin: 0.25rem; position: relative; overflow: hidden; }
+        .btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent); transition: left 0.5s ease; }
+        .btn:hover::before { left: 100%; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); color: white; box-shadow: var(--shadow-md); }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .btn-success { background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%); color: white; box-shadow: var(--shadow-md); }
+        .btn-success:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .btn-danger { background: linear-gradient(135deg, var(--danger-color) 0%, #dc2626 100%); color: white; box-shadow: var(--shadow-md); }
+        .btn-danger:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .video-container { background: white; border-radius: var(--radius-xl); padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow-xl); text-align: center; border: 1px solid rgba(255, 255, 255, 0.2); }
+        .video-container h3 { font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+        .video-player { width: 100%; max-width: 800px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); transition: transform 0.2s ease; }
+        .video-player:hover { transform: scale(1.02); }
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; }
+        .zone-grid, .stats { background: white; padding: 2rem; border-radius: var(--radius-xl); box-shadow: var(--shadow-xl); border: 1px solid rgba(255, 255, 255, 0.2); transition: transform 0.2s ease; }
+        .zone-grid:hover, .stats:hover { transform: translateY(-2px); }
+        .zone-grid h3, .stats h3 { margin-bottom: 1.5rem; color: var(--gray-900); font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .zones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
+        .zone { padding: 1.5rem 1rem; border-radius: var(--radius-lg); text-align: center; font-weight: 600; color: white; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: var(--shadow-md); }
+        .zone::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent); transition: left 0.5s ease; }
+        .zone:hover::before { left: 100%; }
+        .zone:hover { transform: translateY(-4px) scale(1.05); box-shadow: var(--shadow-lg); }
+        .zone.low { background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%); }
+        .zone.medium { background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%); }
+        .zone.high { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+        .zone.critical { background: linear-gradient(135deg, var(--danger-color) 0%, #dc2626 100%); animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: var(--shadow-md);} 50% { transform: scale(1.05); box-shadow: var(--shadow-lg);} }
+        .total-count { font-size: 3.5rem; font-weight: 700; background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; margin: 1.5rem 0; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+        .progress-bar { width: 100%; height: 0.5rem; background: var(--gray-200); border-radius: var(--radius-lg); overflow: hidden; margin: 1.5rem 0; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); }
+        .progress-fill { height: 100%; background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); width: 0%; transition: width 0.3s ease; border-radius: var(--radius-lg); position: relative; }
+        .progress-fill::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent); animation: shimmer 2s infinite; }
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .status { text-align: center; padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: var(--radius-lg); font-weight: 500; box-shadow: var(--shadow-md); transition: all 0.2s ease; }
+        .status:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+        .status.success { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); color: #166534; border: 1px solid #86efac; }
+        .status.error { background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%); color: #991b1b; border: 1px solid #fca5a5; }
+        .status.info { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); color: #1e40af; border: 1px solid #93c5fd; }
+        .file-info { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: var(--radius-lg); padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid var(--primary-color); box-shadow: var(--shadow-sm); transition: all 0.2s ease; }
+        .file-info:hover { transform: translateX(4px); box-shadow: var(--shadow-md); }
+        .file-info h4 { color: var(--gray-900); margin-bottom: 0.75rem; font-weight: 600; }
+        .file-info p { color: var(--gray-600); margin-bottom: 0.5rem; }
+        @media (max-width: 1024px) { .container { padding: 1.5rem; } .dashboard { grid-template-columns: 1fr; gap: 1.5rem; } }
+        @media (max-width: 768px) { .nav-container { flex-direction: column; gap: 1rem; padding: 0 1rem; } .nav-links { gap: 0.5rem; } .page-header h1 { font-size: 2.5rem; } .upload-section { padding: 1.5rem; } .upload-area { padding: 2rem 1rem; } .zones { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; } .zone { padding: 1rem 0.75rem; font-size: 0.875rem; } .total-count { font-size: 2.5rem; } .btn { padding: 0.625rem 1.5rem; font-size: 0.875rem; } }
+        @media (max-width: 480px) { .container { padding: 1rem; } .nav-links { flex-direction: column; gap: 0.5rem; width: 100%; } .nav-links a { text-align: center; } .zones { grid-template-columns: 1fr; gap: 0.5rem; } .total-count { font-size: 2rem; } .page-header h1 { font-size: 2rem; } .upload-area { padding: 1.5rem 0.75rem; } .upload-icon { font-size: 3rem; } }
+        .loading { animation: loading 1.5s ease-in-out infinite; }
+        @keyframes loading { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        html { scroll-behavior: smooth; }
+        .btn:focus, .nav-links a:focus { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--gray-100); }
+        ::-webkit-scrollbar-thumb { background: var(--gray-400); border-radius: var(--radius); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--gray-500); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo" id="refreshLogo" style="cursor:pointer;"><i class="fas fa-video"></i> CrowdVision</div>
+            <div class="user-info" style="gap:0.5rem; align-items:center;">
+                <a href="{{ url_for('index') }}" class="btn btn-outline" style="white-space:nowrap;"><i class="fas fa-satellite-dish"></i> Live Monitoring</a>
+                <a href="{{ url_for('video_upload') }}" class="btn btn-outline" style="white-space:nowrap;"><i class="fas fa-upload"></i> Video Upload</a>
+                <span class="user-welcome">Welcome, {{ session.username }}!</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>📁 Video Upload Analysis</h1>
+            <p>Upload a video file to analyze crowd density patterns with advanced AI detection</p>
+        </div>
+
+        <div class="upload-section">
+            <h3>
+                <span>📤</span>
+                <span>Upload Video File</span>
+            </h3>
+            <div class="upload-area" onclick="document.getElementById('videoFile').click()">
+                <div class="upload-icon">📹</div>
+                <div class="upload-text">Click to select video file</div>
+                <div class="upload-subtext">Or drag and drop a video file here</div>
+                <div class="upload-subtext">Supported formats: MP4, AVI, MOV, MKV (Max: 500MB)</div>
+            </div>
+            <input type="file" id="videoFile" accept="video/*">
+            
+            <div class="file-info" id="fileInfo" style="display: none;">
+                <h4>📋 File Information</h4>
+                <p id="fileName"></p>
+                <p id="fileSize"></p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p id="progressText">Ready to upload...</p>
+            </div>
+
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <button class="btn btn-primary" onclick="uploadVideo()" id="uploadBtn" disabled>
+                    <span>📤</span>
+                    <span>Upload & Analyze</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="status" id="status" style="display: none;">
+            Ready to upload video
+        </div>
+
+        <div class="video-container" id="videoContainer" style="display: none;">
+            <h3>
+                <span>🎬</span>
+                <span>Video Analysis</span>
+            </h3>
+            <video id="videoPlayer" class="video-player" controls preload="metadata">
+                Your browser does not support the video tag.
+            </video>
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-success" id="startAnalysisBtn" onclick="startAnalysis()">
+                    <span>🔍</span>
+                    <span>Start Analysis</span>
+                </button>
+                <button class="btn btn-danger" id="stopAnalysisBtn" onclick="stopAnalysis()">
+                    <span>⏹️</span>
+                    <span>Stop Analysis</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard" id="dashboard" style="display: none;">
+            <div class="zone-grid">
+                <h3>
+                    <span>📍</span>
+                    <span>Zone Status Grid</span>
+                </h3>
+                <div class="zones" id="zoneGrid"></div>
+            </div>
+
+            <div class="stats">
+                <h3>
+                    <span>📊</span>
+                    <span>Analysis Statistics</span>
+                </h3>
+                <div class="total-count" id="totalCount">0</div>
+                <p style="text-align: center; color: var(--gray-600); margin-bottom: 1.5rem;">People Detected in Current Frame</p>
+                
+                <div style="margin-top: 2rem;">
+                    <h4 style="color: var(--gray-700); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>📈</span>
+                        <span>Video Progress</span>
+                    </h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="analysisProgress"></div>
+                    </div>
+                    <p id="analysisText" style="text-align: center; margin-top: 0.75rem; color: var(--gray-600);">Not started</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFile = null;
+        let analysisInterval = null;
+        let isAnalyzing = false;
+        const API_BASE = window.location.origin;
+
+        const uploadArea = document.querySelector('.upload-area');
+        const fileInput = document.getElementById('videoFile');
+
+        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+        uploadArea.addEventListener('dragleave', () => { uploadArea.classList.remove('dragover'); });
+        uploadArea.addEventListener('drop', (e) => { e.preventDefault(); uploadArea.classList.remove('dragover'); const files = e.dataTransfer.files; if (files.length > 0) { handleFileSelection(files[0]); } });
+        fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) { handleFileSelection(e.target.files[0]); } });
+
+        function handleFileSelection(file) {
+            const validTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska'];
+            if (!validTypes.includes(file.type)) { showStatus('❌ Please select a valid video file (MP4, AVI, MOV, MKV)', 'error'); return; }
+            selectedFile = file;
+            document.getElementById('fileInfo').style.display = 'block';
+            document.getElementById('fileName').textContent = `📁 ${file.name}`;
+            document.getElementById('fileSize').textContent = `📊 Size: ${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+            document.getElementById('uploadBtn').disabled = false;
+            showStatus('✅ Video file selected successfully', 'success');
+        }
+
+        async function uploadVideo() {
+            if (!selectedFile) { showStatus('❌ Please select a video file first', 'error'); return; }
+            const formData = new FormData();
+            formData.append('video', selectedFile);
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const uploadBtn = document.getElementById('uploadBtn');
+            uploadBtn.disabled = true; uploadBtn.innerHTML = '<span>⏳</span><span>Uploading...</span>';
+            showStatus('📤 Uploading video file...', 'info');
+            let progress = 0; const progressInterval = setInterval(() => { progress += Math.random() * 15; if (progress > 90) progress = 90; progressFill.style.width = progress + '%'; progressText.textContent = `Uploading... ${Math.round(progress)}%`; }, 200);
+            try {
+                const response = await fetch(`${API_BASE}/api/upload-video`, { method: 'POST', body: formData, credentials: 'same-origin' });
+                clearInterval(progressInterval);
+                const contentType = response.headers.get('content-type') || '';
+                if (!response.ok) {
+                    // Likely not authenticated or route missing
+                    if (contentType.includes('text/html')) {
+                        showStatus('🔒 Please log in to upload videos. Redirecting to login…', 'error');
+                        setTimeout(() => { window.location.href = `${API_BASE}/login?next=/upload`; }, 800);
+                        return;
+                    }
+                    const text = await response.text();
+                    showStatus(`❌ Upload failed (${response.status}): ${text || 'Server error'}`, 'error');
+                    uploadBtn.disabled = false; uploadBtn.innerHTML = '<span>📤</span><span>Upload & Analyze</span>';
+                    return;
+                }
+                let data;
+                if (contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    console.error('Unexpected response (not JSON):', text);
+                    showStatus('❌ Upload failed: Unexpected server response (not JSON).', 'error');
+                    uploadBtn.disabled = false; uploadBtn.innerHTML = '<span>📤</span><span>Upload & Analyze</span>';
+                    return;
+                }
+                if (data.status === 'success') {
+                    if(data.session_token){ window.uploadSessionToken = data.session_token; }
+                    progressFill.style.width = '100%';
+                    progressText.textContent = 'Upload complete!';
+                    showStatus('✅ Video uploaded successfully!', 'success');
+                    completeUpload(data.filepath, data.filename);
+                } else {
+                    showStatus('❌ Upload failed: ' + (data.message || 'Unknown error'), 'error');
+                    uploadBtn.disabled = false; uploadBtn.innerHTML = '<span>📤</span><span>Upload & Analyze</span>';
+                }
+            } catch (error) {
+                clearInterval(progressInterval);
+                console.error('Upload error:', error);
+                showStatus('❌ Upload failed: ' + error.message, 'error');
+                uploadBtn.disabled = false; uploadBtn.innerHTML = '<span>📤</span><span>Upload & Analyze</span>';
+            }
+        }
+
+        function completeUpload(serverFilePath, filename) {
+            window.uploadedVideoPath = serverFilePath; window.uploadedFileName = filename;
+            const videoContainer = document.getElementById('videoContainer'); const videoPlayer = document.getElementById('videoPlayer');
+            videoContainer.style.display = 'block';
+            const videoURL = URL.createObjectURL(selectedFile); videoPlayer.src = videoURL;
+            initializeZones(); document.getElementById('dashboard').style.display = 'grid';
+            document.getElementById('progressText').textContent = 'Upload complete! Ready for analysis.';
+            const uploadBtn = document.getElementById('uploadBtn'); uploadBtn.disabled = false; uploadBtn.innerHTML = '<span>🔄</span><span>Upload New Video</span>';
+        }
+
+        // Extract existing session token (if page opened with ?session=...)
+        (function(){
+            const params = new URLSearchParams(window.location.search);
+            const sess = params.get('session');
+            if(sess){ window.uploadSessionToken = sess; }
+        })();
+
+        function initializeZones() {
+            const zoneGrid = document.getElementById('zoneGrid'); zoneGrid.innerHTML = '';
+            for (let i = 1; i <= 9; i++) { const zoneDiv = document.createElement('div'); zoneDiv.className = 'zone low'; zoneDiv.innerHTML = `<div>Z${i}</div><div>Low</div><div>(0)</div>`; zoneGrid.appendChild(zoneDiv); }
+        }
+
+    async function startAnalysis() {
+            if (isAnalyzing) { showStatus('🔄 Analysis is already running...', 'info'); return; }
+            if (!window.uploadedVideoPath) { showStatus('❌ Please upload a video file first', 'error'); return; }
+            if(!window.uploadSessionToken){
+                // Try parse again from URL as fallback
+                const params = new URLSearchParams(window.location.search);
+                const reSess = params.get('session');
+                if(reSess){ window.uploadSessionToken = reSess; }
+            }
+            if(!window.uploadSessionToken){
+                showStatus('❌ Missing session token. Re-upload the video.', 'error');
+                return;
+            }
+            isAnalyzing = true; showStatus('🔍 Analysis started - Processing video...', 'info');
+            const startBtn = document.getElementById('startAnalysisBtn'); startBtn.disabled = true; startBtn.innerHTML = '<span>⏳</span><span>Analyzing...</span>';
+            try {
+                const response = await fetch(`${API_BASE}/api/process-video`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ video_path: window.uploadedVideoPath, session_token: window.uploadSessionToken }),
+                    credentials: 'same-origin'
+                });
+                const contentType = response.headers.get('content-type') || '';
+                if (!response.ok) {
+                    if (contentType.includes('text/html')) {
+                        showStatus('🔒 Session expired. Redirecting to login…', 'error');
+                        setTimeout(() => { window.location.href = `${API_BASE}/login?next=/upload`; }, 800);
+                        return;
+                    }
+                    const text = await response.text();
+                    throw new Error(`Server error (${response.status}): ${text}`);
+                }
+                let data;
+                if (contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    throw new Error('Unexpected response (not JSON)');
+                }
+                if (data.status === 'success') {
+                    if(data.session_token){ window.uploadSessionToken = data.session_token; }
+                    showStatus('✅ Video analysis started successfully!', 'success');
+                    const videoPlayer = document.getElementById('videoPlayer');
+                    const analysisProgress = document.getElementById('analysisProgress');
+                    const analysisText = document.getElementById('analysisText');
+                    analysisInterval = setInterval(() => {
+                        updateZoneDataFromUpload();
+                        if (videoPlayer.duration > 0) {
+                            const progress = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+                            analysisProgress.style.width = progress + '%';
+                            analysisText.textContent = `Playing... ${Math.round(progress)}%`;
+                            if (progress >= 100) { analysisText.textContent = 'Video completed'; }
+                        }
+                    }, 1000);
+                    videoPlayer.play();
+                    startBtn.disabled = false; startBtn.innerHTML = '<span>🔍</span><span>Start Analysis</span>';
+                } else {
+                    showStatus('❌ Analysis failed: ' + (data.message || 'Unknown error'), 'error');
+                    isAnalyzing = false; startBtn.disabled = false; startBtn.innerHTML = '<span>🔍</span><span>Start Analysis</span>';
+                }
+            } catch (error) {
+                console.error('Analysis error:', error);
+                showStatus('❌ Analysis failed: ' + error.message, 'error');
+                isAnalyzing = false; startBtn.disabled = false; startBtn.innerHTML = '<span>🔍</span><span>Start Analysis</span>';
+            }
+        }
+
+    async function updateZoneDataFromUpload() {
+            try {
+        if(!window.uploadSessionToken) return;
+        const resp = await fetch(`${API_BASE}/api/upload_zones/${window.uploadSessionToken}`, { credentials: 'same-origin', cache: 'no-store' });
+                const ct = resp.headers.get('content-type') || '';
+                if (!resp.ok) { return; }
+                if (!ct.includes('application/json')) { return; }
+                const data = await resp.json();
+                const totalCount = data.total || 0; document.getElementById('totalCount').textContent = totalCount;
+                const zoneGrid = document.getElementById('zoneGrid'); zoneGrid.innerHTML = '';
+                if (data.zones && data.zones.length > 0) {
+                    data.zones.forEach(zone => { const zoneDiv = document.createElement('div'); zoneDiv.className = `zone ${zone.level.toLowerCase()}`; zoneDiv.innerHTML = `<div>${zone.id}</div><div>${zone.level}</div><div>(${zone.count})</div>`; zoneGrid.appendChild(zoneDiv); });
+                } else {
+                    for (let i = 1; i <= 9; i++) { const zoneDiv = document.createElement('div'); zoneDiv.className = 'zone low'; zoneDiv.innerHTML = `<div>Z${i}</div><div>Low</div><div>(0)</div>`; zoneGrid.appendChild(zoneDiv); }
+                }
+            } catch (e) {
+                console.error('Error fetching zone data:', e);
+            }
+        }
+
+        function stopAnalysis() {
+            isAnalyzing = false; if (analysisInterval) { clearInterval(analysisInterval); analysisInterval = null; }
+            const videoPlayer = document.getElementById('videoPlayer'); videoPlayer.pause(); const startBtn = document.getElementById('startAnalysisBtn'); startBtn.disabled = false; startBtn.innerHTML = '<span>🔍</span><span>Start Analysis</span>'; showStatus('⏹️ Analysis stopped', 'info'); document.getElementById('analysisText').textContent = 'Analysis stopped';
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status'); status.textContent = message; status.className = `status ${type}`; status.style.display = 'block'; if (type === 'success') { setTimeout(() => { status.style.display = 'none'; }, 3000); }
+        }
+
+        document.getElementById('refreshLogo').onclick = function() {
+            window.location.reload();
+        };
+
+    window.onload = async function() {
+            initializeZones();
+            // Lightweight ping to zones to warm connection; no auth required now
+            try {
+        // no-op for new separated endpoints
+            } catch (_) { /* ignore */ }
+        };
+    </script>
+</body>
+</html>

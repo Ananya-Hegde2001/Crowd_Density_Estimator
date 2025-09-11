@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Monitoring - CrowdVision</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; }
+        .navbar { background: white; padding: 1rem 0; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 1000; }
+        .nav-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #667eea; }
+        .user-info { display: flex; align-items: center; gap: 1rem; }
+        .user-welcome { color: #333; font-weight: 500; }
+        .btn { padding: 0.5rem 1.5rem; border: none; border-radius: 25px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s; }
+        .btn-outline { border: 2px solid #667eea; color: #667eea; background: transparent; }
+        .btn-outline:hover { background: #667eea; color: white; transform: translateY(-2px); }
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        .header { text-align: center; margin-bottom: 2rem; color: #333; }
+        .header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; background: linear-gradient(45deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .header p { color: #666; font-size: 1.1rem; }
+        .video-container { text-align: center; margin-bottom: 2rem; background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
+        .video-feed { max-width: 100%; height: auto; border: 3px solid #e1e5e9; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); }
+        .video-error { padding: 3rem; background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 15px; text-align: center; color: #6c757d; }
+        .video-error i { font-size: 4rem; margin-bottom: 1rem; color: #dee2e6; }
+        .controls { text-align: center; margin: 2rem 0; }
+        .control-btn { padding: 1rem 2rem; margin: 0 0.5rem; border: none; border-radius: 15px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.3s; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-start { background: linear-gradient(45deg, #28a745, #20c997); color: white; }
+        .btn-stop { background: linear-gradient(45deg, #dc3545, #fd7e14); color: white; }
+        .btn-refresh { background: linear-gradient(45deg, #007bff, #6610f2); color: white; }
+        .control-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); }
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; }
+        .zone-grid { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
+        .zone-grid h3 { margin-bottom: 1.5rem; color: #333; font-size: 1.3rem; display: flex; align-items: center; gap: 0.5rem; }
+        .zones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .zone { padding: 1.5rem; border-radius: 15px; text-align: center; font-weight: bold; color: white; transition: all 0.3s; }
+        .zone:hover { transform: scale(1.05); }
+        .zone.low { background: linear-gradient(45deg, #28a745, #20c997); }
+        .zone.medium { background: linear-gradient(45deg, #ffc107, #fd7e14); }
+        .zone.high { background: linear-gradient(45deg, #fd7e14, #dc3545); }
+        .zone.critical { background: linear-gradient(45deg, #dc3545, #6f42c1); animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1);} 50% { opacity: 0.8; transform: scale(1.02);} }
+        .stats { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
+        .stats h3 { margin-bottom: 1.5rem; color: #333; font-size: 1.3rem; display: flex; align-items: center; gap: 0.5rem; }
+        .total-count { font-size: 3rem; font-weight: bold; background: linear-gradient(45deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-align: center; margin: 2rem 0; }
+        .count-label { text-align: center; color: #666; font-size: 1.1rem; margin-bottom: 2rem; }
+        .alerts { max-height: 250px; overflow-y: auto; border: 1px solid #e1e5e9; padding: 1rem; background: #f8f9fa; border-radius: 15px; }
+        .alert-item { padding: 0.75rem; margin: 0.5rem 0; background: white; border-left: 4px solid #dc3545; border-radius: 8px; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
+        .status { text-align: center; padding: 1rem; margin: 1rem 0; border-radius: 15px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+        .status.connected { background: linear-gradient(45deg, #d4edda, #c3e6cb); color: #155724; }
+        .status.disconnected { background: linear-gradient(45deg, #f8d7da, #f5c6cb); color: #721c24; }
+        @media (max-width: 768px) { .dashboard { grid-template-columns: 1fr; } .nav-container { padding: 0 1rem; flex-direction: column; gap: 1rem; } .header h1 { font-size: 2rem; } .control-btn { display: block; margin: 0.5rem 0; width: 100%; max-width: 300px; } .zones { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 480px) { .zones { grid-template-columns: 1fr; } .container { padding: 1rem; } }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo" id="refreshLogo" style="cursor:pointer;"><i class="fas fa-video"></i> CrowdVision</div>
+            <div class="user-info" style="gap:0.5rem; align-items:center;">
+                <a href="{{ url_for('index') }}" class="btn btn-outline" style="white-space:nowrap;"><i class="fas fa-satellite-dish"></i> Live Monitoring</a>
+                <a href="{{ url_for('video_upload') }}" class="btn btn-outline" style="white-space:nowrap;"><i class="fas fa-upload"></i> Video Upload</a>
+                <span class="user-welcome">Welcome, {{ session.username }}!</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-chart-line"></i> Live Monitoring Dashboard</h1>
+            <p>Real-time crowd density analysis with AI-powered zone detection</p>
+        </div>
+
+        <div class="status" id="status"><i class="fas fa-circle"></i> Camera Ready - Click Start Camera to begin monitoring</div>
+
+        <div class="video-container">
+            <h3><i class="fas fa-camera"></i> Live Camera Feed</h3>
+            <img src="" alt="Video Feed" class="video-feed" id="videoFeed" onerror="this.style.display='none'; document.getElementById('videoError').style.display='block';">
+            <div id="videoError" class="video-error" style="display:none;">
+                <i class="fas fa-video-slash"></i>
+                <h4>Camera Not Active</h4>
+                <p>Click "Start Camera" to begin live monitoring</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn btn-start" onclick="startCamera()" id="startBtn"><i class="fas fa-play"></i> Start Camera</button>
+            <button class="control-btn btn-stop" onclick="stopCamera()" id="stopBtn"><i class="fas fa-stop"></i> Stop Camera</button>
+            <button class="control-btn btn-refresh" onclick="refreshData()" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+        </div>
+
+        <div class="dashboard">
+            <div class="zone-grid">
+                <h3><i class="fas fa-th"></i> Zone Status Grid</h3>
+                <div class="zones" id="zoneGrid"></div>
+            </div>
+
+            <div class="stats">
+                <h3><i class="fas fa-chart-bar"></i> Analytics & Alerts</h3>
+                <div class="total-count" id="totalCount">0</div>
+                <p class="count-label"><i class="fas fa-users"></i> Total People Detected</p>
+                <h4><i class="fas fa-bell"></i> Recent Alerts</h4>
+                <div class="alerts" id="alertsList">
+                    <div style="text-align: center; color: #999; padding: 2rem;"><i class="fas fa-bell-slash"></i><p>No alerts yet</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let updateInterval;
+
+        function updateZoneData() {
+            return fetch('/api/zones')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('totalCount').textContent = data.total || 0;
+                    const zoneGrid = document.getElementById('zoneGrid');
+                    zoneGrid.innerHTML = '';
+                    if (data.zones && data.zones.length > 0) {
+                        data.zones.forEach(zone => {
+                            const zoneDiv = document.createElement('div');
+                            zoneDiv.className = `zone ${String(zone.level).toLowerCase()}`;
+                            zoneDiv.innerHTML = `
+                                <div style="font-size: 1.1rem; margin-bottom: 0.5rem;">${zone.id}</div>
+                                <div style="font-size: 1rem;">${zone.level}</div>
+                                <div style="font-size: 1.2rem; margin-top: 0.5rem;">(${zone.count})</div>
+                            `;
+                            zoneGrid.appendChild(zoneDiv);
+                        });
+                    } else {
+                        zoneGrid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: #999; padding: 1rem;">No zone data yet</div>`;
+                    }
+                })
+                .catch(error => console.error('Error fetching zone data:', error));
+        }
+
+        function updateAlerts() {
+            return fetch('/api/alerts?limit=3')
+                .then(response => response.json())
+                .then(data => {
+                    const alertsList = document.getElementById('alertsList');
+                    const alerts = Array.isArray(data.alerts) ? data.alerts : [];
+                    if (alerts.length > 0) {
+                        alertsList.innerHTML = alerts.map(a => `
+                            <div class="alert-item">
+                                <i class="fas fa-exclamation-triangle" style="color: #dc3545; margin-right: 0.5rem;"></i>
+                                [${a.timestamp}] ${a.message}
+                            </div>
+                        `).join('');
+                    } else {
+                        alertsList.innerHTML = `<div style="text-align: center; color: #999; padding: 2rem;"><i class="fas fa-bell-slash"></i><p>No alerts yet</p></div>`;
+                    }
+                })
+                .catch(error => console.error('Error fetching alerts:', error));
+        }
+
+        function startCamera() {
+            const startBtn = document.getElementById('startBtn');
+            const originalHTML = startBtn.innerHTML;
+            startBtn.innerHTML = '<div class="loading"></div> Starting...';
+            startBtn.disabled = true;
+
+            fetch('/api/start')
+                .then(response => response.json())
+                .then(data => {
+                    const status = document.getElementById('status');
+                    const videoFeed = document.getElementById('videoFeed');
+                    const videoError = document.getElementById('videoError');
+                    if (data.status === 'started' || data.status === 'already_active') {
+                        status.innerHTML = '<i class="fas fa-circle" style="color: #28a745;"></i> Camera Active - Live monitoring in progress';
+                        status.className = 'status connected';
+                        videoFeed.style.display = 'block';
+                        videoError.style.display = 'none';
+                        videoFeed.src = '/video_feed?' + new Date().getTime();
+                        startUpdates();
+                    } else {
+                        status.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i> Failed to start camera';
+                        status.className = 'status disconnected';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error starting camera:', error);
+                    document.getElementById('status').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i> Error starting camera';
+                    document.getElementById('status').className = 'status disconnected';
+                })
+                .finally(() => { startBtn.innerHTML = originalHTML; startBtn.disabled = false; });
+        }
+
+        function stopCamera() {
+            const stopBtn = document.getElementById('stopBtn');
+            const originalHTML = stopBtn.innerHTML;
+            stopBtn.innerHTML = '<div class="loading"></div> Stopping...';
+            stopBtn.disabled = true;
+
+            fetch('/api/stop')
+                .then(response => response.json())
+                .then(data => {
+                    const status = document.getElementById('status');
+                    const videoFeed = document.getElementById('videoFeed');
+                    const videoError = document.getElementById('videoError');
+                    status.innerHTML = '<i class="fas fa-circle" style="color: #6c757d;"></i> Camera Ready - Click Start Camera to begin monitoring';
+                    status.className = 'status disconnected';
+                    videoFeed.style.display = 'none';
+                    videoError.style.display = 'block';
+                    stopUpdates();
+                })
+                .catch(error => console.error('Error stopping camera:', error))
+                .finally(() => { stopBtn.innerHTML = originalHTML; stopBtn.disabled = false; });
+        }
+
+        function refreshData() {
+            const refreshBtn = document.getElementById('refreshBtn');
+            const originalHTML = refreshBtn.innerHTML;
+            refreshBtn.innerHTML = '<div class="loading"></div> Refreshing...';
+            refreshBtn.disabled = true;
+
+            Promise.all([updateZoneData(), updateAlerts()])
+                .finally(() => { setTimeout(() => { refreshBtn.innerHTML = originalHTML; refreshBtn.disabled = false; }, 600); });
+        }
+
+        function startUpdates() {
+            if (updateInterval) clearInterval(updateInterval);
+            updateInterval = setInterval(() => { updateZoneData(); updateAlerts(); }, 1000);
+        }
+
+        function stopUpdates() { if (updateInterval) { clearInterval(updateInterval); updateInterval = null; } }
+
+        function checkCameraStatus() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    const status = document.getElementById('status');
+                    const videoFeed = document.getElementById('videoFeed');
+                    const videoError = document.getElementById('videoError');
+                    if (data.camera_active) {
+                        status.innerHTML = '<i class="fas fa-circle" style="color: #28a745;"></i> Camera Active - Live monitoring in progress';
+                        status.className = 'status connected';
+                        videoFeed.style.display = 'block';
+                        videoError.style.display = 'none';
+                        videoFeed.src = '/video_feed?' + new Date().getTime();
+                        startUpdates();
+                    } else {
+                        status.innerHTML = '<i class="fas fa-circle" style="color: #6c757d;"></i> Camera Ready - Click Start Camera to begin monitoring';
+                        status.className = 'status disconnected';
+                        videoFeed.style.display = 'none';
+                        videoError.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking camera status:', error);
+                    document.getElementById('status').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i> Error checking camera status';
+                    document.getElementById('status').className = 'status disconnected';
+                });
+        }
+
+        document.getElementById('refreshLogo').onclick = function() {
+            window.location.reload();
+        };
+
+        window.onload = function() { updateZoneData(); updateAlerts(); checkCameraStatus(); };
+        window.onbeforeunload = function() { stopUpdates(); };
+    </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{
+    "camera_settings": {
+        "camera_index": 1,
+        "width": 1920,
+        "height": 1080,
+        "fps": 30
+    },
+    "detection_settings": {
+        "model_path": "yolov8s.pt",
+        "confidence_threshold": 0.5,
+        "grid_size": {
+            "rows": 3,
+            "cols": 3
+        }
+    },
+    "zone_thresholds": {
+        "low": 3,
+        "medium": 6,
+        "high": 10
+    },
+    "server_settings": {
+        "host": "0.0.0.0",
+        "port": 5000,
+        "debug": true
+    },
+    "alert_settings": {
+        "enable_sound": true,
+        "log_file": "alerts_log.txt",
+        "beep_frequency": 1000,
+        "beep_duration": 500
+    }
+}

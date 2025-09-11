@@ -1,0 +1,12 @@
+python backend\dashboard_app.py
+
+python -m venv venv
+
+.\venv\Scripts\activate
+
+pip install -r requirements.txt
+
+cd backend/python dashboard_app.py
+
+
+

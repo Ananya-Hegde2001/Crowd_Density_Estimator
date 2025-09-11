@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - CrowdVision</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .register-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            animation: slideIn 0.6s ease;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo i {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .logo h1 {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .input-holder {
+            position: relative;
+        }
+
+        .input-holder input {
+            padding-right: 3rem; /* space for eye or icon */
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .field-icon, .show-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            cursor: default;
+        }
+
+        .password-strength {
+            margin-top: 0.5rem;
+            height: 4px;
+            background: #e1e5e9;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+
+        .strength-weak { background: #dc3545; }
+        .strength-fair { background: #ffc107; }
+        .strength-good { background: #28a745; }
+        .strength-strong { background: #007bff; }
+
+        .password-requirements {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .requirement i {
+            font-size: 0.75rem;
+            color: #dc3545;
+            position: static;
+            margin: 0;
+            transform: none;
+        }
+
+        .requirement.met i {
+            color: #28a745;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 2rem 0;
+            position: relative;
+            color: #999;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e1e5e9;
+            z-index: 1;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .login-link {
+            text-align: center;
+            color: #666;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .back-home {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .back-home:hover {
+            transform: translateX(-5px);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .flash-messages {
+            margin-bottom: 2rem;
+        }
+
+        .flash-message {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .flash-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .flash-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .flash-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 480px) {
+            .register-container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .back-home {
+                position: static;
+                justify-content: center;
+                margin-bottom: 2rem;
+            }
+        }
+
+        .show-password {
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .show-password:hover {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('dashboard') }}" class="back-home">
+        <i class="fas fa-arrow-left"></i>
+        Back to Home
+    </a>
+
+    <div class="register-container">
+        <div class="logo">
+            <i class="fas fa-user-plus"></i>
+            <h1>Join CrowdVision</h1>
+            <p>Create your account to start monitoring</p>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            <i class="fas fa-{% if category == 'error' %}exclamation-circle{% elif category == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('register') }}" id="registerForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-holder">
+                    <input type="text" id="username" name="username" required placeholder="Choose a username" minlength="3">
+                    <i class="fas fa-user field-icon"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <div class="input-holder">
+                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                    <i class="fas fa-envelope field-icon"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-holder">
+                    <input type="password" id="password" name="password" required placeholder="Create a password" minlength="6">
+                    <i class="fas fa-eye show-password" onclick="togglePassword('password')"></i>
+                </div>
+                <div class="password-strength">
+                    <div class="password-strength-bar" id="strengthBar"></div>
+                </div>
+                <div class="password-requirements" id="requirements">
+                    <div class="requirement" id="length">
+                        <i class="fas fa-times"></i>
+                        <span>At least 6 characters</span>
+                    </div>
+                    <div class="requirement" id="letter">
+                        <i class="fas fa-times"></i>
+                        <span>Contains a letter</span>
+                    </div>
+                    <div class="requirement" id="number">
+                        <i class="fas fa-times"></i>
+                        <span>Contains a number</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <div class="input-holder">
+                    <input type="password" id="confirm_password" name="confirm_password" required placeholder="Confirm your password">
+                    <i class="fas fa-eye show-password" onclick="togglePassword('confirm_password')"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">
+                <i class="fas fa-user-plus"></i>
+                Create Account
+            </button>
+        </form>
+
+        <div class="divider">
+            <span>Already have an account?</span>
+        </div>
+
+        <div class="login-link">
+            <p><a href="{{ url_for('login') }}">Sign in here</a></p>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            const toggleIcon = passwordInput.parentElement.querySelector('.show-password');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+
+        function checkPasswordStrength(password) {
+            let score = 0;
+            
+            // Length check
+            if (password.length >= 6) score += 1;
+            if (password.length >= 8) score += 1;
+            
+            // Character type checks
+            if (/[a-zA-Z]/.test(password)) score += 1;
+            if (/[0-9]/.test(password)) score += 1;
+            if (/[^A-Za-z0-9]/.test(password)) score += 1;
+            
+            return score;
+        }
+
+        function updatePasswordStrength() {
+            const password = document.getElementById('password').value;
+            const strengthBar = document.getElementById('strengthBar');
+            const score = checkPasswordStrength(password);
+            
+            // Update strength bar
+            const percentage = (score / 5) * 100;
+            strengthBar.style.width = percentage + '%';
+            
+            // Update strength color
+            strengthBar.className = 'password-strength-bar';
+            if (score <= 1) {
+                strengthBar.classList.add('strength-weak');
+            } else if (score <= 2) {
+                strengthBar.classList.add('strength-fair');
+            } else if (score <= 3) {
+                strengthBar.classList.add('strength-good');
+            } else {
+                strengthBar.classList.add('strength-strong');
+            }
+            
+            // Update requirements
+            updateRequirement('length', password.length >= 6);
+            updateRequirement('letter', /[a-zA-Z]/.test(password));
+            updateRequirement('number', /[0-9]/.test(password));
+        }
+
+        function updateRequirement(id, met) {
+            const requirement = document.getElementById(id);
+            const icon = requirement.querySelector('i');
+            
+            if (met) {
+                requirement.classList.add('met');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-check');
+            } else {
+                requirement.classList.remove('met');
+                icon.classList.remove('fa-check');
+                icon.classList.add('fa-times');
+            }
+        }
+
+        function validatePasswords() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            const submitBtn = document.getElementById('submitBtn');
+            
+            const passwordValid = password.length >= 6 && /[a-zA-Z]/.test(password) && /[0-9]/.test(password);
+            const passwordsMatch = password === confirmPassword && confirmPassword.length > 0;
+            
+            if (passwordValid && passwordsMatch) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        // Event listeners
+        document.getElementById('password').addEventListener('input', function() {
+            updatePasswordStrength();
+            validatePasswords();
+        });
+
+        document.getElementById('confirm_password').addEventListener('input', validatePasswords);
+
+        // Auto-hide flash messages after 5 seconds
+        setTimeout(function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(message) {
+                message.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(function() {
+                    message.remove();
+                }, 300);
+            });
+        }, 5000);
+
+        // Add fade out animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                to {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Focus first input on load
+        window.addEventListener('load', function() {
+            document.getElementById('username').focus();
+        });
+
+        // Form validation
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Passwords do not match!');
+                return false;
+            }
+            
+            if (password.length < 6) {
+                e.preventDefault();
+                alert('Password must be at least 6 characters long!');
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

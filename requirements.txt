@@ -1,0 +1,11 @@
+flask
+flask-cors
+ultralytics
+opencv-python
+numpy
+matplotlib
+torch
+firebase-admin
+pymongo
+streamlit
+
