@@ -242,10 +242,6 @@ Edit `backend/config.json`:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🙏 Acknowledgments
 
 - **Ultralytics** for the YOLOv8 model
@@ -253,10 +249,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Flask** team for the web framework
 - **Font Awesome** for beautiful icons
 
-## 📞 Support
-
-For support, email support@crowdvision.com or create an issue on GitHub.
-
----
 
 **Built with ❤️ for safer spaces and better crowd management**
