@@ -248,6 +248,9 @@ Edit `backend/config.json`:
 - **OpenCV** community for computer vision tools
 - **Flask** team for the web framework
 - **Font Awesome** for beautiful icons
+  
+## 📶 Star History
 
+[![Star History Chart](https://api.star-history.com/svg?repos=legions-developer/invoicely,Ananya-Hegde2001/Crowd_Density_Estimator&type=date&legend=top-left)](https://www.star-history.com/#legions-developer/invoicely&Ananya-Hegde2001/Crowd_Density_Estimator&type=date&legend=top-left)
 
 **Built with ❤️ for safer spaces and better crowd management**
